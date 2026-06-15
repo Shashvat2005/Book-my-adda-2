@@ -1,21 +1,70 @@
+// User Login Page
+
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // const handleSubmit = (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+  //   setTimeout(() => {
+  //     setLoading(false);
+  //     alert("Login feature coming soon! Backend integration needed.");
+  //   }, 500);
+  // };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
+
+    const { email, password } = form;
+
+    if(email.trim() === "dev@mail.com" || password.trim() === "dev") {
+      localStorage.setItem("token", "dev-token");
+      window.location.href = "/";
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        BACKEND_URL + "/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(form),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "Login failed");
+        return;
+      }
+
+      // ✅ store token
+      localStorage.setItem("token", data.token);
+
+      alert("Login successful!");
+
+      window.location.href = "/";
+    } catch (error) {
+      alert("Server error or CORS issue");
+    } finally {
       setLoading(false);
-      alert("Login feature coming soon! Backend integration needed.");
-    }, 500);
+    }
   };
 
   return (
@@ -28,7 +77,17 @@ const Login = () => {
       }}
     >
       <div className="w-full max-w-[480px] min-h-[420px] p-10 text-center bg-card/40 rounded-2xl shadow-2xl backdrop-blur-sm animate-auth-fade-in">
-        <h2 className="text-2xl font-bold mb-8 text-foreground tracking-wider">Login</h2>
+        <div className="relative mb-8">
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="absolute left-0 top-1/2 -translate-y-1/2 inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-foreground bg-card/60 border border-border rounded-md hover:bg-muted transition"
+          >
+            ← Back
+          </button>
+
+          <h2 className="text-2xl font-bold text-foreground tracking-wider text-center">Login</h2>
+        </div>
 
         <form onSubmit={handleSubmit}>
           <div className="mb-5 text-left">

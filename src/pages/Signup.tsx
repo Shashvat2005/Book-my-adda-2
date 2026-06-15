@@ -1,6 +1,9 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const Signup = () => {
   const [showPwd, setShowPwd] = useState(false);
@@ -12,6 +15,8 @@ const Signup = () => {
     password: "",
   });
 
+  const navigate = useNavigate();
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
@@ -22,7 +27,7 @@ const Signup = () => {
 
   try {
     const res = await fetch(
-      "https://6773-2406-16c0-11a-1aab-d4a7-7583-b15d-ca10.ngrok-free.app/auth/register",
+      BACKEND_URL + "/auth/register",
       {
         method: "POST",
         headers: {
@@ -58,7 +63,21 @@ const Signup = () => {
       }}
     >
       <div className="w-full max-w-[480px] min-h-[500px] p-10 text-center bg-card/40 rounded-2xl shadow-2xl backdrop-blur-sm animate-auth-fade-in">
-        <h2 className="text-2xl font-bold mb-8 text-foreground tracking-wider">Create Your Account</h2>
+        {/* <h2 className="text-2xl font-bold mb-8 text-foreground tracking-wider">Create Your Account</h2> */}
+
+        <div className="flex items-center gap-6 mb-8">
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-foreground bg-card/60 border border-border rounded-md hover:bg-muted transition"
+          >
+            ← Back
+          </button>
+
+          <h2 className="text-2xl font-bold text-foreground tracking-wider">
+            Create Your Account
+          </h2>
+        </div>
 
         <form onSubmit={handleSubmit}>
           <div className="mb-5 text-left">

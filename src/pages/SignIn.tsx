@@ -1,3 +1,5 @@
+// Companies Login Page
+
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import NavigationBar from "@/components/NavigationBar";
